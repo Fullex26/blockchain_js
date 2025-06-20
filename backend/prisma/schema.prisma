@@ -1,0 +1,53 @@
+// Prisma schema for PostgreSQL database
+// Run migrations with: npx prisma migrate dev --name init
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  Admin
+  Beneficiary
+  Vendor
+}
+
+enum BenefitStatus {
+  Issued
+  Redeemed
+  Expired
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  walletAddress String    @unique
+  role          UserRole
+  name          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Vendor {
+  id            Int      @id @default(autoincrement())
+  name          String?
+  walletAddress String   @unique
+  isVerified    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}
+
+model Benefit {
+  id                Int           @id @default(autoincrement())
+  benefitId         String        @unique
+  recipientAddress  String
+  value             Decimal       @db.Decimal(30, 0)
+  status            BenefitStatus
+  issuedAt          DateTime
+  redeemedAt        DateTime?
+  expiresAt         DateTime
+  issuedByAddress   String
+  redeemedByAddress String?
+}
