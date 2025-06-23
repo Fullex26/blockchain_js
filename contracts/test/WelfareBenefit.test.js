@@ -53,8 +53,14 @@ describe('WelfareBenefit', function () {
   it('cannot redeem expired benefit', async function () {
     const benefitId = ethers.utils.formatBytes32String('B4');
     const now = (await ethers.provider.getBlock('latest')).timestamp;
-    await welfare.issueBenefit(beneficiary.address, benefitId, 10, now - 10);
+    // Issue benefit with future expiration
+    await welfare.issueBenefit(beneficiary.address, benefitId, 10, now + 100);
     await welfare.addVendor(vendor.address);
+    
+    // Fast forward time to make the benefit expired
+    await ethers.provider.send("evm_increaseTime", [200]);
+    await ethers.provider.send("evm_mine");
+    
     await expect(
       welfare.connect(vendor).redeemBenefit(benefitId, beneficiary.address)
     ).to.be.revertedWith('Benefit expired');

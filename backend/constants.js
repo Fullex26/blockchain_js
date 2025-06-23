@@ -1,7 +1,10 @@
-require('dotenv').config();
+// Only load dotenv if not in test environment (test sets env vars directly)
+if (process.env.NODE_ENV !== 'test') {
+  require('dotenv').config();
+}
 
 module.exports = {
-  RPC_URL: process.env.RPC_URL,
+  RPC_URL: process.env.SEPOLIA_RPC_URL,
   CONTRACT_ADDRESS: process.env.CONTRACT_ADDRESS,
   ABI: [
     {

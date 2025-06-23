@@ -1,5 +1,5 @@
 export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-export const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL;
+export const RPC_URL = process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL;
 
 export const ABI = [
   {

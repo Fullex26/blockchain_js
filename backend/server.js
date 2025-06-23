@@ -10,6 +10,23 @@ app.use(express.json());
 const prisma = new PrismaClient();
 
 /**
+ * Root route - API status and information
+ */
+app.get('/', (req, res) => {
+  res.status(200).json({
+    service: "Civitas Backend API",
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    description: "Blockchain-based welfare identity and delivery platform",
+    endpoints: {
+      benefits: "/benefits/:address",
+      vendorTransactions: "/transactions/vendor/:address",
+      users: "/api/users"
+    }
+  });
+});
+
+/**
  * Get all benefits for a beneficiary from the database.
  */
 app.get('/benefits/:address', async (req, res) => {

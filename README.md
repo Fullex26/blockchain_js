@@ -1,6 +1,6 @@
 # Blockchain-Based Welfare Identity and Delivery Platform MVP
 
-This repository contains the source code for a Minimum Viable Product (MVP) of a blockchain-based welfare delivery platform for Australia, demonstrating programmable welfare benefits, digital identity verification, and transparent auditing on the Polygon Mumbai testnet.
+This repository contains the source code for a Minimum Viable Product (MVP) of a blockchain-based welfare delivery platform for Australia, demonstrating programmable welfare benefits, digital identity verification, and transparent auditing on the Ethereum Sepolia testnet.
 
 ## Project Structure
 
@@ -28,8 +28,48 @@ This repository contains the source code for a Minimum Viable Product (MVP) of a
 - Node.js (v16+)
 - npm or yarn
 - MetaMask browser extension
-- Polygon Mumbai testnet access
+- Ethereum Sepolia testnet access
 - PostgreSQL (v12+)
+
+## Environment Variables Setup
+
+You'll need to set up environment variables for each component. Here's what you need:
+
+### For Smart Contracts (`contracts/.env`):
+```
+SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_PROJECT_ID
+PRIVATE_KEY=your_wallet_private_key_here
+```
+
+### For Backend (`backend/.env`):
+```
+SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_PROJECT_ID
+CONTRACT_ADDRESS=0x...deployed_contract_address_here
+DATABASE_URL=postgresql://username:password@localhost:5432/welfare_db
+PORT=4000
+```
+
+### For All Frontend Portals (`.env.local`):
+```
+NEXT_PUBLIC_CONTRACT_ADDRESS=0x...deployed_contract_address_here
+NEXT_PUBLIC_SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_PROJECT_ID
+```
+
+**Getting RPC URL:**
+1. Sign up at [Alchemy](https://www.alchemy.com/) or [Infura](https://infura.io/)
+2. Create a new project for Ethereum Sepolia testnet
+3. Copy the HTTP URL
+
+**Getting Sepolia ETH:**
+Get test ETH from [Sepolia Faucet](https://sepoliafaucet.com) for deployment and transactions.
+
+**MetaMask Sepolia Setup:**
+Add Sepolia testnet to MetaMask:
+- Network Name: Sepolia Testnet
+- RPC URL: `https://sepolia.infura.io/v3/YOUR_PROJECT_ID`
+- Chain ID: 11155111
+- Currency Symbol: SepoliaETH
+- Block Explorer: https://sepolia.etherscan.io
 
 ## Smart Contract (Contracts)
 
@@ -37,14 +77,14 @@ This repository contains the source code for a Minimum Viable Product (MVP) of a
    ```bash
    cd contracts
    cp .env.example .env
-   # Edit .env to set MUMBAI_RPC_URL and PRIVATE_KEY
+   # Edit .env to set SEPOLIA_RPC_URL and PRIVATE_KEY
    ```
 2. Install dependencies and compile:
    ```bash
    npm install
    npm run compile
    ```
-3. Deploy to Mumbai:
+3. Deploy to Sepolia:
    ```bash
    npm run deploy
    ```
@@ -55,8 +95,8 @@ This repository contains the source code for a Minimum Viable Product (MVP) of a
 ### Admin Portal
 ```bash
 cd admin-portal
-cp .env.example .env.local
-# Set NEXT_PUBLIC_CONTRACT_ADDRESS and NEXT_PUBLIC_RPC_URL
+cp .env.local.example .env.local
+# Set NEXT_PUBLIC_CONTRACT_ADDRESS and NEXT_PUBLIC_SEPOLIA_RPC_URL
 npm install
 npm run dev
 ```
@@ -70,8 +110,8 @@ npx shadcn-ui@latest init
 ### Beneficiary Portal
 ```bash
 cd beneficiary-portal
-cp .env.example .env.local
-# Set NEXT_PUBLIC_CONTRACT_ADDRESS and NEXT_PUBLIC_RPC_URL
+cp .env.local.example .env.local
+# Set NEXT_PUBLIC_CONTRACT_ADDRESS and NEXT_PUBLIC_SEPOLIA_RPC_URL
 npm install
 npm run dev
 ```
@@ -85,8 +125,8 @@ npx shadcn-ui@latest init
 ### Vendor Portal
 ```bash
 cd vendor-portal
-cp .env.example .env.local
-# Set NEXT_PUBLIC_CONTRACT_ADDRESS and NEXT_PUBLIC_RPC_URL
+cp .env.local.example .env.local
+# Set NEXT_PUBLIC_CONTRACT_ADDRESS and NEXT_PUBLIC_SEPOLIA_RPC_URL
 npm install
 npm run dev
 ```
@@ -102,7 +142,7 @@ npx shadcn-ui@latest init
 ```bash
 cd backend
 cp .env.example .env
-# Set RPC_URL, CONTRACT_ADDRESS, and DATABASE_URL
+# Set SEPOLIA_RPC_URL, CONTRACT_ADDRESS, and DATABASE_URL
 npm install
 # Generate Prisma client and run migrations
 npx prisma generate

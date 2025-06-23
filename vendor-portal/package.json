@@ -7,11 +7,12 @@
     "start": "next start"
   },
   "dependencies": {
+    "@shadcn/ui": "latest",
+    "ethers": "^5.7.2",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "ethers": "^5.7.2",
-    "@shadcn/ui": "latest"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.12",

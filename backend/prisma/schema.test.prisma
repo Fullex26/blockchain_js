@@ -1,0 +1,41 @@
+// Test Prisma schema for SQLite database
+// Run migrations with: npx prisma migrate dev --name init --schema=./prisma/schema.test.prisma
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  walletAddress String    @unique
+  role          String    // Using String instead of enum for SQLite
+  name          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Vendor {
+  id            Int      @id @default(autoincrement())
+  name          String?
+  walletAddress String   @unique
+  isVerified    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}
+
+model Benefit {
+  id                Int           @id @default(autoincrement())
+  benefitId         String        @unique
+  recipientAddress  String
+  value             String        // SQLite doesn't support Decimal, use String
+  status            String        // Using String instead of enum for SQLite
+  issuedAt          DateTime
+  redeemedAt        DateTime?
+  expiresAt         DateTime
+  issuedByAddress   String
+  redeemedByAddress String?
+} 

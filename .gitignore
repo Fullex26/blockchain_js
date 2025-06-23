@@ -1,0 +1,314 @@
+# =============================================================================
+# CIVITAS BLOCKCHAIN WELFARE PLATFORM - COMPREHENSIVE .GITIGNORE
+# =============================================================================
+
+# =============================================================================
+# ENVIRONMENT VARIABLES & SECURITY (NEVER COMMIT THESE!)
+# =============================================================================
+.env
+.env.*
+*.env
+!.env.example
+!.env.local.example
+.env.local
+.env.production
+.env.development
+.env.test
+
+# Private keys and wallets (CRITICAL - NEVER COMMIT!)
+*.pem
+*.key
+*.p12
+*.pfx
+wallet.json
+keystore/
+private-keys/
+
+# =============================================================================
+# NODE.JS & NPM
+# =============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Package managers
+package-lock.json*
+yarn.lock*
+pnpm-lock.yaml*
+.yarn/
+.pnp.*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+.nyc_output/
+
+# =============================================================================
+# NEXT.JS FRONTEND PORTALS
+# =============================================================================
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Next.js cache
+.next/cache/
+
+# Vercel deployment
+.vercel
+
+# SWC
+.swc/
+
+# =============================================================================
+# HARDHAT BLOCKCHAIN DEVELOPMENT
+# =============================================================================
+# Hardhat cache and artifacts
+cache/
+artifacts/
+typechain/
+typechain-types/
+
+# Hardhat network files
+.openzeppelin/
+
+# Gas reporter
+gas-report.txt
+
+# =============================================================================
+# PRISMA DATABASE
+# =============================================================================
+# Prisma generated client
+prisma/generated/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+dev.db*
+test.db*
+
+# Database migrations (keep schema.prisma and migrations folder)
+# Comment out the line below if you want to commit migrations
+# prisma/migrations/
+
+# =============================================================================
+# TESTING
+# =============================================================================
+# Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+cypress/fixtures/examples/
+
+# Jest
+coverage/
+.jest-cache/
+
+# Test databases and artifacts
+test-results/
+*.tsbuildinfo
+
+# =============================================================================
+# DEVELOPMENT TOOLS & IDEs
+# =============================================================================
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# =============================================================================
+# OPERATING SYSTEMS
+# =============================================================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Thumbs.db
+ehthumbs_vista.db
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =============================================================================
+# LOGS & TEMPORARY FILES
+# =============================================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary folders
+tmp/
+temp/
+.tmp/
+.temp/
+
+# =============================================================================
+# BLOCKCHAIN SPECIFIC
+# =============================================================================
+# Deployment artifacts (you might want to commit these in production)
+deployments/localhost/
+deployments/hardhat/
+
+# Network files
+networks.json
+
+# ABI files (auto-generated, comment out if you want to commit them)
+# abis/
+
+# =============================================================================
+# DOCKER
+# =============================================================================
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# =============================================================================
+# DOCUMENTATION & ASSETS
+# =============================================================================
+# Documentation builds
+docs/_build/
+docs/build/
+
+# Screenshots (uncomment if you don't want to commit screenshots)
+# screenshots/
+
+# =============================================================================
+# DEPLOYMENT & CI/CD
+# =============================================================================
+# Deployment files
+.serverless/
+.netlify/
+.now/
+
+# GitHub Actions artifacts
+.github/workflows/*.log
+
+# =============================================================================
+# MISC
+# =============================================================================
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.history/*
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Storybook build outputs
+.out
+.storybook-out
+storybook-static
+
+# Temporary folders
+.tmp
+.temp
+
+# =============================================================================
+# PROJECT SPECIFIC
+# =============================================================================
+# Local development overrides
+local-config.json
+dev-config.json
+
+# API keys and credentials (backup safeguard)
+*key*
+*secret*
+*credential*
+*config*.json
+credentials/
+secrets/
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# =============================================================================
+# END OF .GITIGNORE
+# ============================================================================= 
