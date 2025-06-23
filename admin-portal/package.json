@@ -7,12 +7,16 @@
     "start": "next start"
   },
   "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.8",
     "@shadcn/ui": "latest",
+    "@tanstack/react-query": "^5.81.2",
     "ethers": "^5.7.2",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "viem": "^2.31.4",
+    "wagmi": "^2.15.6"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.12",
