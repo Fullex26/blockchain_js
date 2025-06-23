@@ -1,25 +1,21 @@
-// Run with: npx jest
-// Set test database URL before any imports
-process.env.DATABASE_URL = 'file:./test.db';
-process.env.NODE_ENV = 'test';
+// Run with: npm test
+// Environment variables are now loaded via jest.env.js
 
 const request = require('supertest');
 const { execSync } = require('child_process');
-const { app, prisma } = require('../server');
+const { app, prisma } = require('../server.test');
 
 beforeAll(async () => {
-  // Apply migrations to the test database using test schema
+  // Setup test database using db push (more reliable for testing)
   try {
-    execSync('npx prisma migrate dev --name init --schema=./prisma/schema.test.prisma', {
-      stdio: 'inherit'
+    console.log('Setting up test database...');
+    execSync('DATABASE_URL="file:./test.db" npx prisma db push --schema=./prisma/schema.test.prisma', {
+      stdio: 'inherit',
+      env: { ...process.env, DATABASE_URL: 'file:./test.db' }
     });
-    // Generate client for test schema
-    execSync('npx prisma generate --schema=./prisma/schema.test.prisma', {
-      stdio: 'inherit'
-    });
+    console.log('Test database setup complete');
   } catch (error) {
-    // Migration might already exist, continue
-    console.log('Migration may already exist, continuing...', error.message);
+    console.log('Database setup failed:', error.message);
   }
 });
 
@@ -38,20 +34,20 @@ describe('API Endpoints', () => {
   test('POST /api/users creates a user', async () => {
     const res = await request(app)
       .post('/api/users')
-      .send({ walletAddress: '0xABC', role: 'Beneficiary', name: 'Test User' });
+      .send({ walletAddress: '0xABC123', role: 'Beneficiary', name: 'Test User' });
     expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty('walletAddress', '0xABC');
+    expect(res.body).toHaveProperty('walletAddress', '0xABC123');
     expect(res.body).toHaveProperty('role', 'Beneficiary');
   });
 
   test('GET /benefits/:address returns array', async () => {
-    const res = await request(app).get('/benefits/0xABC');
+    const res = await request(app).get('/benefits/0xABC123');
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
   });
 
   test('GET /transactions/vendor/:address returns array', async () => {
-    const res = await request(app).get('/transactions/vendor/0xABC');
+    const res = await request(app).get('/transactions/vendor/0xABC123');
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
   });

@@ -1,16 +1,24 @@
+// Test server configuration using SQLite test schema
 // Load environment variables first
 require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const { startIndexer } = require('./indexer');
+// Note: We don't start the indexer in tests
 const { PrismaClient } = require('@prisma/client');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const prisma = new PrismaClient();
+// Initialize Prisma with test schema
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL || 'file:./test.db'
+    }
+  }
+});
 
 /**
  * Root route - API status and information
@@ -82,14 +90,4 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-// Start the event indexer to sync blockchain events into the database
-if (require.main === module) {
-  // Start indexer and server when run directly
-  startIndexer();
-  const PORT = process.env.PORT || 4000;
-  app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-  });
-}
-
-module.exports = { app, prisma };
+module.exports = { app, prisma }; 
