@@ -22,11 +22,27 @@ app.get('/', (req, res) => {
     timestamp: new Date().toISOString(),
     description: "Blockchain-based welfare identity and delivery platform",
     endpoints: {
+      allBenefits: "/benefits/all",
       benefits: "/benefits/:address",
       vendorTransactions: "/transactions/vendor/:address",
       users: "/api/users"
     }
   });
+});
+
+/**
+ * Get all benefits from the database (for admin portal).
+ */
+app.get('/benefits/all', async (req, res) => {
+  try {
+    const benefits = await prisma.benefit.findMany({
+      orderBy: { issuedAt: 'desc' }
+    });
+    res.json(benefits);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching all benefits' });
+  }
 });
 
 /**

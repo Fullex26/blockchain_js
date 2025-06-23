@@ -9,12 +9,20 @@ import { Badge } from '../components/ui/badge';
 
 export default function Home() {
   const { address, isConnected } = useAccount();
+  
+  // Hydration-safe mounted state
+  const [mounted, setMounted] = useState(false);
   const [benefits, setBenefits] = useState([]);
 
   const mockVCs = [
     { id: 1, name: 'Proof of Identity', issuer: 'Government of Australia' },
     { id: 2, name: 'JobSeeker Eligibility', issuer: 'Welfare Platform' }
   ];
+
+  // Ensure component is mounted before showing wallet-dependent content
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Watch for BenefitIssued events for this specific beneficiary
   useWatchContractEvent({
@@ -46,30 +54,48 @@ export default function Home() {
     if (!isConnected || !address) return;
     
     try {
-      // In a production app, you would fetch this data from your backend API
-      // or use The Graph to query blockchain events more efficiently
-      // For the MVP, we'll show a placeholder message
       console.log('Fetching benefits for address:', address);
       
-      // This would be replaced with actual API call:
-      // const response = await fetch(`/api/benefits/${address}`);
-      // const benefitsData = await response.json();
-      // setBenefits(benefitsData);
-      
-      // For now, set empty array - benefits will be updated via event listeners
-      setBenefits([]);
+      const response = await fetch(`http://localhost:4000/benefits/${address}`);
+      if (response.ok) {
+        const benefitsData = await response.json();
+        // Transform the data for display
+        const transformedBenefits = benefitsData.map(benefit => ({
+          benefitId: benefit.benefitId,
+          value: benefit.value.toString(),
+          expiration: new Date(benefit.expiresAt).toLocaleDateString(),
+          status: benefit.status
+        }));
+        setBenefits(transformedBenefits);
+      } else {
+        console.error('Failed to fetch benefits');
+        setBenefits([]);
+      }
     } catch (error) {
       console.error('Error fetching benefits:', error);
+      setBenefits([]);
     }
   };
 
   useEffect(() => {
-    if (isConnected && address) {
+    if (mounted && isConnected && address) {
       fetchBenefits();
     } else {
       setBenefits([]);
     }
-  }, [isConnected, address]);
+  }, [mounted, isConnected, address]);
+
+  // Don't render wallet-dependent content until mounted
+  if (!mounted) {
+    return (
+      <div className="max-w-xl mx-auto p-4 space-y-6">
+        <h1 className="text-2xl font-bold mb-4">Beneficiary Portal</h1>
+        <div className="text-center p-8 bg-gray-50 rounded-lg">
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-xl mx-auto p-4 space-y-6">
@@ -77,7 +103,7 @@ export default function Home() {
       
       <div className="flex justify-between items-center">
         <ConnectButton />
-        {isConnected && (
+        {isConnected && address && (
           <div className="text-sm text-gray-600">
             Connected as: {address}
           </div>
@@ -114,7 +140,7 @@ export default function Home() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {benefits.map((benefit, i) => (
-                  <Card key={i} title={parseBytes32String(benefit.benefitId)}>
+                  <Card key={i} title={benefit.benefitId}>
                     <p className="text-sm">Value: {benefit.value}</p>
                     <p className="text-sm">Expires: {benefit.expiration}</p>
                     <div className="mt-2">

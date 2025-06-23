@@ -13,11 +13,19 @@ export default function Home() {
   const { writeContract } = useWriteContract();
   const toast = useToast();
   
+  // Hydration-safe mounted state
+  const [mounted, setMounted] = useState(false);
+  
   const [beneficiaryAddress, setBeneficiaryAddress] = useState('');
   const [benefitType, setBenefitType] = useState('');
   const [txStatus, setTxStatus] = useState('');
   const [loading, setLoading] = useState(false);
   const [redemptions, setRedemptions] = useState([]);
+
+  // Ensure component is mounted before showing wallet-dependent content
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Check if current address is a registered vendor
   const { data: isVendor, isLoading: isCheckingVendor } = useReadContract({
@@ -25,7 +33,7 @@ export default function Home() {
     abi: ABI,
     functionName: 'vendors',
     args: [address],
-    enabled: isConnected && !!address,
+    enabled: mounted && isConnected && !!address,
   });
 
   // Watch for BenefitRedeemed events for this vendor
@@ -84,29 +92,35 @@ export default function Home() {
     if (!isConnected || !address) return;
     
     try {
-      // In a production app, you would fetch this data from your backend API
-      // For the MVP, we'll show a placeholder - redemptions will be updated via event listeners
       console.log('Fetching redemptions for vendor:', address);
       
-      // This would be replaced with actual API call:
-      // const response = await fetch(`/api/transactions/vendor/${address}`);
-      // const redemptionsData = await response.json();
-      // setRedemptions(redemptionsData);
-      
-      // For now, set empty array
-      setRedemptions([]);
+      const response = await fetch(`http://localhost:4000/transactions/vendor/${address}`);
+      if (response.ok) {
+        const redemptionsData = await response.json();
+        // Transform data for display
+        const transformedRedemptions = redemptionsData.map(redemption => ({
+          benefitId: redemption.benefitId,
+          recipient: redemption.recipientAddress,
+          timestamp: redemption.redeemedAt ? new Date(redemption.redeemedAt).toLocaleString() : 'N/A'
+        }));
+        setRedemptions(transformedRedemptions);
+      } else {
+        console.error('Failed to fetch redemptions');
+        setRedemptions([]);
+      }
     } catch (error) {
       console.error('Error fetching redemptions:', error);
+      setRedemptions([]);
     }
   };
 
   useEffect(() => {
-    if (isConnected && address && isVendor) {
+    if (mounted && isConnected && address && isVendor) {
       fetchRedemptions();
     } else {
       setRedemptions([]);
     }
-  }, [isConnected, address, isVendor]);
+  }, [mounted, isConnected, address, isVendor]);
 
   const columns = [
     { header: 'Benefit ID', accessor: 'benefitId' },
@@ -114,13 +128,25 @@ export default function Home() {
     { header: 'Timestamp', accessor: 'timestamp' }
   ];
 
+  // Don't render wallet-dependent content until mounted
+  if (!mounted) {
+    return (
+      <div className="max-w-xl mx-auto p-4 space-y-6">
+        <h1 className="text-2xl font-bold mb-4">Vendor Portal</h1>
+        <div className="text-center p-8 bg-gray-50 rounded-lg">
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-xl mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold mb-4">Vendor Portal</h1>
       
       <div className="flex justify-between items-center">
         <ConnectButton />
-        {isConnected && (
+        {isConnected && address && (
           <div className="text-sm text-gray-600">
             Connected as: {address}
           </div>
@@ -196,11 +222,7 @@ export default function Home() {
                 ) : (
                   <DataTable
                     columns={columns}
-                    data={redemptions.map((r) => ({
-                      benefitId: parseBytes32String(r.benefitId),
-                      recipient: r.recipient,
-                      timestamp: r.timestamp
-                    }))}
+                    data={redemptions}
                   />
                 )}
               </div>

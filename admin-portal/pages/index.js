@@ -12,6 +12,9 @@ export default function Home() {
   const { writeContract } = useWriteContract();
   const toast = useToast();
   
+  // Hydration-safe mounted state
+  const [mounted, setMounted] = useState(false);
+  
   const [recipient, setRecipient] = useState('');
   const [benefitType, setBenefitType] = useState('');
   const [value, setValue] = useState('');
@@ -19,6 +22,18 @@ export default function Home() {
   const [benefits, setBenefits] = useState([]);
   const [vendorAddress, setVendorAddress] = useState('');
   const [txStatus, setTxStatus] = useState('');
+
+  // Ensure component is mounted before showing wallet-dependent content
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Fetch benefits on mount and when connected
+  useEffect(() => {
+    if (mounted && isConnected) {
+      fetchBenefits();
+    }
+  }, [mounted, isConnected]);
 
   // Watch for BenefitIssued events to update the benefits list
   useWatchContractEvent({
@@ -31,9 +46,25 @@ export default function Home() {
   });
 
   const fetchBenefits = async () => {
-    // For now, we'll use a simple state update. In a production app, 
-    // you might want to fetch from your backend API or use The Graph
-    // This is a simplified version for the MVP
+    try {
+      const response = await fetch('http://localhost:4000/benefits/all');
+      if (response.ok) {
+        const data = await response.json();
+        // Transform data for display
+        const transformedData = data.map(benefit => ({
+          benefitId: benefit.benefitId,
+          recipient: benefit.recipientAddress,
+          value: benefit.value.toString(),
+          expiration: new Date(benefit.expiresAt).toLocaleDateString(),
+          status: benefit.status
+        }));
+        setBenefits(transformedData);
+      } else {
+        console.error('Failed to fetch benefits');
+      }
+    } catch (error) {
+      console.error('Error fetching benefits:', error);
+    }
   };
 
   const handleIssueBenefit = async () => {
@@ -127,13 +158,25 @@ export default function Home() {
     { header: 'Status', accessor: 'status' }
   ];
 
+  // Don't render wallet-dependent content until mounted
+  if (!mounted) {
+    return (
+      <div className="max-w-3xl mx-auto p-4 space-y-6">
+        <h1 className="text-2xl font-bold mb-4">Admin Portal</h1>
+        <div className="text-center p-8 bg-gray-50 rounded-lg">
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold mb-4">Admin Portal</h1>
       
       <div className="flex justify-between items-center">
         <ConnectButton />
-        {isConnected && (
+        {isConnected && address && (
           <div className="text-sm text-gray-600">
             Connected as: {address}
           </div>

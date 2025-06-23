@@ -2,7 +2,7 @@
 // Run migrations with: npx prisma migrate dev --name init
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -10,22 +10,14 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum UserRole {
-  Admin
-  Beneficiary
-  Vendor
-}
-
-enum BenefitStatus {
-  Issued
-  Redeemed
-  Expired
-}
+// Enums are converted to strings for SQLite compatibility
+// UserRole: "Admin" | "Beneficiary" | "Vendor"
+// BenefitStatus: "Issued" | "Redeemed" | "Expired"
 
 model User {
   id            Int       @id @default(autoincrement())
   walletAddress String    @unique
-  role          UserRole
+  role          String    // "Admin" | "Beneficiary" | "Vendor"
   name          String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -43,8 +35,8 @@ model Benefit {
   id                Int           @id @default(autoincrement())
   benefitId         String        @unique
   recipientAddress  String
-  value             Decimal       @db.Decimal(30, 0)
-  status            BenefitStatus
+  value             String
+  status            String        // "Issued" | "Redeemed" | "Expired"
   issuedAt          DateTime
   redeemedAt        DateTime?
   expiresAt         DateTime
