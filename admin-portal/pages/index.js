@@ -35,24 +35,29 @@ export default function Home() {
     }
   }, [mounted, isConnected]);
 
+  // Also fetch benefits when BenefitIssued events are detected
+  const handleBenefitIssued = () => {
+    fetchBenefits();
+  };
+
   // Watch for BenefitIssued events to update the benefits list
   useWatchContractEvent({
     address: CONTRACT_ADDRESS,
     abi: ABI,
     eventName: 'BenefitIssued',
     onLogs: (logs) => {
-      fetchBenefits();
+      handleBenefitIssued();
     },
   });
 
   const fetchBenefits = async () => {
     try {
-      const response = await fetch('http://localhost:4000/benefits/all');
+      const response = await fetch('http://localhost:4000/api/benefits');
       if (response.ok) {
         const data = await response.json();
         // Transform data for display
         const transformedData = data.map(benefit => ({
-          benefitId: benefit.benefitId,
+          benefitId: parseBytes32String(benefit.benefitId),
           recipient: benefit.recipientAddress,
           value: benefit.value.toString(),
           expiration: new Date(benefit.expiresAt).toLocaleDateString(),

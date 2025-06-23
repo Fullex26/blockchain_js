@@ -22,9 +22,9 @@ app.get('/', (req, res) => {
     timestamp: new Date().toISOString(),
     description: "Blockchain-based welfare identity and delivery platform",
     endpoints: {
-      allBenefits: "/benefits/all",
-      benefits: "/benefits/:address",
-      vendorTransactions: "/transactions/vendor/:address",
+      allBenefits: "/api/benefits",
+      benefits: "/api/benefits/:address",
+      vendorTransactions: "/api/transactions/vendor/:address",
       users: "/api/users"
     }
   });
@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 /**
  * Get all benefits from the database (for admin portal).
  */
-app.get('/benefits/all', async (req, res) => {
+app.get('/api/benefits', async (req, res) => {
   try {
     const benefits = await prisma.benefit.findMany({
       orderBy: { issuedAt: 'desc' }
@@ -48,6 +48,34 @@ app.get('/benefits/all', async (req, res) => {
 /**
  * Get all benefits for a beneficiary from the database.
  */
+app.get('/api/benefits/:address', async (req, res) => {
+  try {
+    const beneficiary = req.params.address;
+    const benefits = await prisma.benefit.findMany({
+      where: { recipientAddress: beneficiary }
+    });
+    res.json(benefits);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching benefits' });
+  }
+});
+
+/**
+ * Legacy endpoints (keeping for backward compatibility)
+ */
+app.get('/benefits/all', async (req, res) => {
+  try {
+    const benefits = await prisma.benefit.findMany({
+      orderBy: { issuedAt: 'desc' }
+    });
+    res.json(benefits);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching all benefits' });
+  }
+});
+
 app.get('/benefits/:address', async (req, res) => {
   try {
     const beneficiary = req.params.address;
@@ -63,6 +91,22 @@ app.get('/benefits/:address', async (req, res) => {
 
 /**
  * Get all redemption transactions for a vendor from the database.
+ */
+app.get('/api/transactions/vendor/:address', async (req, res) => {
+  try {
+    const vendor = req.params.address;
+    const txs = await prisma.benefit.findMany({
+      where: { redeemedByAddress: vendor }
+    });
+    res.json(txs);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching vendor transactions' });
+  }
+});
+
+/**
+ * Legacy endpoint (keeping for backward compatibility)
  */
 app.get('/transactions/vendor/:address', async (req, res) => {
   try {

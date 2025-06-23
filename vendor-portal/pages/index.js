@@ -94,12 +94,12 @@ export default function Home() {
     try {
       console.log('Fetching redemptions for vendor:', address);
       
-      const response = await fetch(`http://localhost:4000/transactions/vendor/${address}`);
+      const response = await fetch(`http://localhost:4000/api/transactions/vendor/${address}`);
       if (response.ok) {
         const redemptionsData = await response.json();
         // Transform data for display
         const transformedRedemptions = redemptionsData.map(redemption => ({
-          benefitId: redemption.benefitId,
+          benefitId: parseBytes32String(redemption.benefitId),
           recipient: redemption.recipientAddress,
           timestamp: redemption.redeemedAt ? new Date(redemption.redeemedAt).toLocaleString() : 'N/A'
         }));

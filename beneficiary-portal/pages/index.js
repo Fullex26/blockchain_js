@@ -56,12 +56,12 @@ export default function Home() {
     try {
       console.log('Fetching benefits for address:', address);
       
-      const response = await fetch(`http://localhost:4000/benefits/${address}`);
+      const response = await fetch(`http://localhost:4000/api/benefits/${address}`);
       if (response.ok) {
         const benefitsData = await response.json();
         // Transform the data for display
         const transformedBenefits = benefitsData.map(benefit => ({
-          benefitId: benefit.benefitId,
+          benefitId: parseBytes32String(benefit.benefitId),
           value: benefit.value.toString(),
           expiration: new Date(benefit.expiresAt).toLocaleDateString(),
           status: benefit.status
